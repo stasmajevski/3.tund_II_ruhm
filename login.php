@@ -1,9 +1,22 @@
 <?php
 
+require("../../config.php");
+
+//$random =" ";
+//var_dump(empty($random));
+
+//echo hash("sha512","Romil");
+
+
 //muutujad mis kirjeldavad Errorid
 $signupEmailError = ""; 
 $signupPasswordError="";
 $birthdayError ="";
+$signupGender="";
+
+// muutujad
+$signupEmail = "";
+
 
 
 
@@ -11,11 +24,15 @@ $birthdayError ="";
 if(isset($_POST["signupEmail"]))
 {
 // jah on olemas
-
+	
 // kas on tühi?
 	if(empty($_POST["signupEmail"]))
 	{
 		$signupEmailError = "See väli on kohustuslik";
+	}
+	else
+	{
+		$signupEmail = $_POST["signupEmail"];
 	}
 }
 
@@ -57,8 +74,66 @@ if(isset($_POST["biD"]) OR isset($_POST["biM"]) OR isset($_POST["biY"]))
 	}
 	
 }
+if( isset( $_POST["signupGender"] ) ){
+		
+		if(!empty( $_POST["signupGender"] ) ){
+		
+			$signupGender = $_POST["signupGender"];
+			
+		}
+		
+	} 
 
-
+	// peab olema email ja parool
+	// uhtegi errorit()
+	if($signupEmailError == "" && $signupPasswordError == "" && $birthdayError == ""
+							   && isset($_POST["signupEmail"]) && isset($_POST["singupPassword"]))
+	{
+		// salvestame andbemaasi
+		echo "Salvestan...<br>";
+		
+		echo "email: ".$signupEmail."<br>";
+		echo "password: ".$_POST["singupPassword"]."<br>";
+		
+		
+		$password = hash("sha512",$_POST["singupPassword"]);
+		
+		echo "password hashed: ".$password."<br>";
+		
+		//echo $serverUsername;
+		// UHENDUS
+		$database = "if16_stanislav";
+		$mysqli = new mysqli($serverHost,$serverUsername,$serverPassword, $database);
+		
+		// sqli rida
+		$stmt = $mysqli->prepare("INSERT INTO user_sample (email,password) VALUES (?,?)");
+		
+		
+		echo $mysqli->error; // !!! Kui läheb midagi valesti, siis see käsk printib viga
+		
+		// stringina üks täht iga muutuja kohta (?), mis tüüp
+		// string - s
+		// integer - i
+		// float (double) - d
+		$stmt->bind_param("ss",$signupEmail,$password); // sest on email ja password VARCHAR - STRING , ehk siis email - s, password - sa
+		
+		//täida käsku
+		if($stmt->execute())
+		{
+			echo "salvsestamine õnnestus";
+		}
+		else
+		{
+			echo "ERROR ".$stmt->error;
+		}
+		
+		//panen ühenduse kinni
+		$stmt->close();
+		$mysqli->close();
+		
+	}
+	
+	
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +159,7 @@ if(isset($_POST["biD"]) OR isset($_POST["biM"]) OR isset($_POST["biY"]))
 
 <form method="POST">
 	<h1>Loo kasutaja</h1>
-	<input name="signupEmail" placeholder="E-mail" type="text"> <?php echo $signupEmailError; ?>
+	<input name="signupEmail" placeholder="E-mail" type="text" value="<?php echo $signupEmail;?>"> <?php echo $signupEmailError; ?>
 	<br><br>
 	<input name="singupPassword" placeholder="Parool" type="password"> <?php echo $signupPasswordError; ?>
 	<br><br>
@@ -115,8 +190,37 @@ if(isset($_POST["biD"]) OR isset($_POST["biM"]) OR isset($_POST["biY"]))
     </select>
     <br>
     <?php echo $birthdayError; ?>
-    <br><br>		
+    <br><br>	
+<?php
+	if($signupGender == "male")
+	{
+?>
+	<input type="radio" name="signupGender" value="male" checked>Male
+	<?php } else { ?>
+	<input type="radio" name="signupGender" value="male">Male
+	<?php } ?>
+	<?php
+	if($signupGender == "female")
+	{
+?>
+	<input type="radio" name="signupGender" value="female" checked>Female
+	<?php } else { ?>
+	<input type="radio" name="signupGender" value="female">Female
+	<?php } ?>
+	<?php
+	if($signupGender == "other")
+	{
+?>
+	<input type="radio" name="signupGender" value="other" checked>Other
+	<?php } else { ?>
+	<input type="radio" name="signupGender" value="other">Other
+	<?php } ?>
+
+	
 	<input type="submit" value="Loo kasutaja" class="button">
+	
+	
+	
 </form>
 
 <!--
