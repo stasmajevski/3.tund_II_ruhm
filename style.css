@@ -1,0 +1,40 @@
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+form{
+	margin:10px auto;
+	max-width:300px;
+	background:#DBDBDB;
+	padding:10px 20px;
+	border-radius:8px;
+}
+h1{
+	text-align:center;
+}
+.button {
+    width: 100%;
+    margin: 0 auto;
+    font-family: 'Nunito', sans-serif;
+    color: white;
+    background-color: #4bc970;
+    border-radius: 5px;
+    font-weight: normal;
+    padding: 5px;
+	border:1px solid #3ac162;
+}
+input[type="text"],input[type="password"]{
+	width:100%;	
+	padding:5px 0 5px 5px;
+}
+select{
+	margin:5px;
+	padding:5px;
+	
+}
+body{
+	font-family: 'Nunito', sans-serif;
+    color: #384047;
+}
