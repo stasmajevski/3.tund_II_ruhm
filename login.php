@@ -72,7 +72,11 @@ if(isset($_POST["biD"]) OR isset($_POST["biM"]) OR isset($_POST["biY"]))
 	{
 		$birthdayError = "Sünniaeg väli on kohustuslik";
 	}
-	
+	else
+	{
+		$birthday = $_POST["biY"].'-'.$_POST["biM"].'-'.$_POST["biD"];
+		
+	}
 }
 if( isset( $_POST["signupGender"] ) ){
 		
@@ -99,6 +103,8 @@ if( isset( $_POST["signupGender"] ) ){
 		$password = hash("sha512",$_POST["singupPassword"]);
 		
 		echo "password hashed: ".$password."<br>";
+		echo "birthday: ".$birthday."<br>";
+		echo "gender: ".$signupGender."<br>";
 		
 		//echo $serverUsername;
 		// UHENDUS
@@ -106,7 +112,7 @@ if( isset( $_POST["signupGender"] ) ){
 		$mysqli = new mysqli($serverHost,$serverUsername,$serverPassword, $database);
 		
 		// sqli rida
-		$stmt = $mysqli->prepare("INSERT INTO user_sample (email,password) VALUES (?,?)");
+		$stmt = $mysqli->prepare("INSERT INTO login (email,password,birthday,gender) VALUES (?,?,?,?)");
 		
 		
 		echo $mysqli->error; // !!! Kui läheb midagi valesti, siis see käsk printib viga
@@ -115,7 +121,7 @@ if( isset( $_POST["signupGender"] ) ){
 		// string - s
 		// integer - i
 		// float (double) - d
-		$stmt->bind_param("ss",$signupEmail,$password); // sest on email ja password VARCHAR - STRING , ehk siis email - s, password - sa
+		$stmt->bind_param("ssss",$signupEmail,$password,$birthday,$signupGender); // sest on email ja password VARCHAR - STRING , ehk siis email - s, password - sa
 		
 		//täida käsku
 		if($stmt->execute())
