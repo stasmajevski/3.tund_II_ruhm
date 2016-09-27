@@ -1,6 +1,7 @@
 <?php
 
 require("../../config.php");
+require("functions.php");
 
 //$random =" ";
 //var_dump(empty($random));
@@ -107,35 +108,10 @@ if( isset( $_POST["signupGender"] ) ){
 		echo "gender: ".$signupGender."<br>";
 		
 		//echo $serverUsername;
-		// UHENDUS
-		$database = "if16_stanislav";
-		$mysqli = new mysqli($serverHost,$serverUsername,$serverPassword, $database);
 		
-		// sqli rida
-		$stmt = $mysqli->prepare("INSERT INTO login (email,password,birthday,gender) VALUES (?,?,?,?)");
+		// KASUTAN FUNTKTSIOONI
 		
-		
-		echo $mysqli->error; // !!! Kui läheb midagi valesti, siis see käsk printib viga
-		
-		// stringina üks täht iga muutuja kohta (?), mis tüüp
-		// string - s
-		// integer - i
-		// float (double) - d
-		$stmt->bind_param("ssss",$signupEmail,$password,$birthday,$signupGender); // sest on email ja password VARCHAR - STRING , ehk siis email - s, password - sa
-		
-		//täida käsku
-		if($stmt->execute())
-		{
-			echo "salvsestamine õnnestus";
-		}
-		else
-		{
-			echo "ERROR ".$stmt->error;
-		}
-		
-		//panen ühenduse kinni
-		$stmt->close();
-		$mysqli->close();
+		signUP($signupEmail,$password,$birthday,$signupGender);
 		
 	}
 	
