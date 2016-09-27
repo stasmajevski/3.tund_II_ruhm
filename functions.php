@@ -26,7 +26,12 @@
 	//                 SIGN UP              
 	/******************************************/
 	
-	var_dump($GLOBALS); // php muutuaja , sees on koik muutujad
+	//var_dump($GLOBALS); // php muutuaja , sees on koik muutujad
+	
+	//!!!!!!!!!!
+	// see file peab olema koigil lehtedel kus tahan kasutada SESSION muutujat
+	session_start();
+	
 	
 	function signUp($email,$password,$birthday,$gender)
 	{
@@ -60,4 +65,61 @@
 		$stmt->close();
 		$mysqli->close();
 	}
+	
+	function login ($email,$password)
+	{
+		$error = "";
+		
+		$database = "if16_stanislav";
+		$mysqli = new mysqli($GLOBALS["serverHost"],$GLOBALS["serverUsername"],$GLOBALS["serverPassword"], $database);
+		
+		// sqli rida
+		$stmt = $mysqli->prepare("SELECT id,email,password FROM login WHERE email = ?");
+		
+		
+		echo $mysqli->error; // !!! Kui läheb midagi valesti, siis see käsk printib viga
+		
+		// asenad kusimargi
+		$stmt ->bind_param("s",$email);
+		
+		//maaran vaartused muutujatesse
+		$stmt ->bind_result($id,$emailFromDb,$passwordFromDb);
+		// tehakse paring
+		$stmt ->execute();
+		
+		// kas tulid andmed andmebaasist voi mitte
+		// on toene kui on vahemalt uks vaste
+		if($stmt->fetch())
+		{
+			// oli sellise meiliga kasutaja
+			
+			//password millega kasutaja tahab sise logida
+			$hash = hash("sha512",$password); // sha512 algoritm
+			
+			if($hash == $passwordFromDb && $email == $emailFromDb)
+			{
+				echo "Kasutaja logis sisse ".$id;
+				
+				//maaran sessiooni muutujad, millele saan ligi teestelt lehtedelt
+				$_SESSION["userID"] = $id;
+				$_SESSION["userEmail"] = $emailFromDb;
+				
+				header("Location: data.php");
+				
+			}
+			else
+			{
+				$error = "vale email või parool";
+			}
+		}
+		else
+		{
+			// ei leidnud kasutajat selle meiliga
+			$error = "vale email voi parool";
+		}
+		
+		return $error;
+	}
+	
+	
 ?>
